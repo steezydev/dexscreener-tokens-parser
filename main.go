@@ -17,7 +17,6 @@ func main() {
 	apiKey := config.ZenrowsApiKey
 
 	s := scraper.New(apiKey)
-	f := fetcher.New()
 
 	store, err := storage.New(config)
 	if err != nil {
@@ -58,11 +57,17 @@ func main() {
 	}
 	log.Printf("Tokens without address: %d", tokensWithoutAddress)
 
+	dexFetcher := fetcher.NewDexscreener()
+	rayFetcher := fetcher.NewRaydium()
+
 	// Fetch missing addresses
 	if tokensWithoutAddress > 0 {
-		log.Printf("Fetching missing addresses...")
-		uniqueTokens = f.FetchMissingAddresses(uniqueTokens)
+		log.Printf("Fetching missing token addresses...")
+		uniqueTokens = dexFetcher.FetchMissingAddresses(uniqueTokens)
 	}
+
+	log.Printf("Fetching LP addresses...")
+	uniqueTokens = rayFetcher.FetchLPAddresses(uniqueTokens)
 
 	// Print tokens each on a new line
 	for _, token := range uniqueTokens {

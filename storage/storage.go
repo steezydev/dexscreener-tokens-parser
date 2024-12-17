@@ -14,6 +14,7 @@ import (
 type TokenEntry struct {
 	PairID    string  `bson:"pairId"`
 	Address   string  `bson:"address"`
+	LPAddress string  `bson:"lpAddress"`
 	Symbol    string  `bson:"symbol"`
 	Name      string  `bson:"name"`
 	MarketCap float64 `bson:"marketCap"`
@@ -54,6 +55,7 @@ func (s *Storage) SaveTokens(tokens []token.Token) error {
 		entries = append(entries, TokenEntry{
 			PairID:    t.PairID,
 			Address:   t.Address,
+			LPAddress: t.LPAddress,
 			Symbol:    t.Symbol,
 			Name:      t.Name,
 			MarketCap: t.MarketCap,

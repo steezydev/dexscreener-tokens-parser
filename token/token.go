@@ -5,6 +5,7 @@ import "time"
 type Token struct {
 	PairID    string    `bson:"pairID"`
 	Address   string    `bson:"address"`
+	LPAddress string    `bson:"lpAddress"`
 	Symbol    string    `bson:"symbol"`
 	Name      string    `bson:"name"`
 	Price     float64   `bson:"price"`

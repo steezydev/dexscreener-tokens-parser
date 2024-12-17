@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gagliardetto/solana-go"
 	"github.com/steezydev/dexscreener-tokens-parser/token"
 )
 
@@ -116,28 +117,18 @@ func (s *Scraper) parseTokens(doc *goquery.Document) []token.Token {
 }
 
 func isValidSolanaAddress(address string) bool {
-	// Solana addresses are base58 encoded and 32-44 characters long
-	if len(address) < 32 || len(address) > 44 {
-		return false
-	}
-
-	// Solana addresses only contain alphanumeric characters
-	for _, char := range address {
-		if !((char >= '0' && char <= '9') ||
-			(char >= 'a' && char <= 'z') ||
-			(char >= 'A' && char <= 'Z')) {
-			return false
-		}
-	}
-	return true
+	_, err := solana.PublicKeyFromBase58(address)
+	return err == nil
 }
 
 func extractTokenAddress(s *goquery.Selection) string {
-	if img := s.Find(".ds-dex-table-row-token-icon"); img.Is("img") {
+	// Find the img element within the token icon div
+	if img := s.Find(".ds-dex-table-row-token-icon-img"); img.Length() > 0 {
 		if src, exists := img.Attr("src"); exists {
 			if u, err := url.Parse(src); err == nil {
-				address := path.Base(u.Path)
-				address = strings.TrimSuffix(address, path.Ext(address))
+				// Extract filename without extension
+				filename := path.Base(u.Path)
+				address := strings.Split(filename, ".")[0] // Split by dot to remove everything after first period
 				if isValidSolanaAddress(address) {
 					return address
 				}

@@ -11,14 +11,14 @@ import (
 	"github.com/steezydev/dexscreener-tokens-parser/token"
 )
 
-type Fetcher struct {
+type DexscreenerFetcher struct {
 	client    *http.Client
 	semaphore chan struct{}
 }
 
-func New() *Fetcher {
-	return &Fetcher{
-		client:    &http.Client{},
+func NewDexscreener() *DexscreenerFetcher {
+	return &DexscreenerFetcher{
+		client:    &http.Client{Timeout: 10 * time.Second},
 		semaphore: make(chan struct{}, 5),
 	}
 }
@@ -33,7 +33,7 @@ type dexScreenerResponse struct {
 	} `json:"pairs"`
 }
 
-func (f *Fetcher) FetchMissingAddresses(tokens []token.Token) []token.Token {
+func (f *DexscreenerFetcher) FetchMissingAddresses(tokens []token.Token) []token.Token {
 	var wg sync.WaitGroup
 
 	for i := range tokens {
@@ -71,7 +71,7 @@ func (f *Fetcher) FetchMissingAddresses(tokens []token.Token) []token.Token {
 	return tokens
 }
 
-func (f *Fetcher) fetchTokenAddress(pairID string) (string, error) {
+func (f *DexscreenerFetcher) fetchTokenAddress(pairID string) (string, error) {
 	url := fmt.Sprintf("https://api.dexscreener.com/latest/dex/pairs/solana/%s", pairID)
 
 	resp, err := f.client.Get(url)
