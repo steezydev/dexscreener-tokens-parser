@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/steezydev/dexscreener-tokens-parser/config"
+	"github.com/steezydev/dexscreener-tokens-parser/export"
 	"github.com/steezydev/dexscreener-tokens-parser/fetcher"
 	"github.com/steezydev/dexscreener-tokens-parser/scraper"
 	"github.com/steezydev/dexscreener-tokens-parser/storage"
@@ -76,6 +77,13 @@ func main() {
 
 	if err := store.SaveTokens(uniqueTokens); err != nil {
 		log.Printf("Error saving tokens: %v", err)
+	}
+
+	filename := fmt.Sprintf("tokens_%s.csv", time.Now().Format("2006-01-02_15-04-05"))
+	if err := export.SaveToCSV(uniqueTokens, filename); err != nil {
+		log.Printf("Error saving tokens to CSV: %v", err)
+	} else {
+		log.Printf("Successfully saved tokens to %s", filename)
 	}
 
 	log.Printf("Successfully processed %d tokens", len(uniqueTokens))
