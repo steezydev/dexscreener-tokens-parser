@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -12,7 +13,16 @@ import (
 
 // SaveToCSV saves the tokens to a CSV file with the given filename
 func SaveToCSV(tokens []token.Token, filename string) error {
-	file, err := os.Create(filename)
+	// Ensure exports directory exists
+	exportDir := "exports"
+	if err := os.MkdirAll(exportDir, 0755); err != nil {
+		return fmt.Errorf("error creating exports directory: %v", err)
+	}
+
+	// Create full file path
+	fullPath := filepath.Join(exportDir, filename)
+
+	file, err := os.Create(fullPath)
 	if err != nil {
 		return fmt.Errorf("error creating file: %v", err)
 	}
